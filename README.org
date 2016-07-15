@@ -2,9 +2,9 @@
 
 ** Dependencies
 - Python 2.7
-- [[www.astropy.org][Astropy]]
-- [[www.numpy.org][NumPy]]
-- [[www.scipy.org][SciPy]]
+- [[http://www.astropy.org][AstroPy]]
+- [[http://www.numpy.org][NumPy]]
+- [[http://www.scipy.org][SciPy]]
 
 These packages can be installed in a variety of means; MacPorts/homebrew, pip, or installing from source.
 
