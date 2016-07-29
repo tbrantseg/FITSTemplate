@@ -68,7 +68,7 @@ class FITSCore (object):
         yvals = np.arange(0,self.ysize)
         w.wcs.crval = [self.RA_val,self.dec_val]
         w.wcs.cdelt = np.array([self.px_size*-1.0,self.px_size])
-        w.wcs.crpix = [self.xsize/2,self.ysize/2]
+        w.wcs.crpix = [0.5+self.xsize/2.0,0.5+self.ysize/2.0]
         w.wcs.ctype = ["RA---TAN","DEC--TAN"]
         header = w.to_header()
         hdu = fits.PrimaryHDU(self.field,header=header)
@@ -170,8 +170,8 @@ class FITSCore (object):
             raise ValueError('Epsilon must be a value between 0 and 1.')
             
         # As defined on the CXC Sherpa website.
-        x_c = self.xsize/2
-        y_c = self.ysize/2
+        x_c = self.xsize/2.0-0.5
+        y_c = self.ysize/2.0-0.5
         FWHM=float(FWHM)
         peak=float(peak)
         theta=np.radians(theta)
