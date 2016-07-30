@@ -94,8 +94,8 @@ class FITSCore (object):
         overwrite(optional): If the output file exists, should it be overwritten?
              Defaults to False.
         """
-        x_c = self.xsize/2
-        y_c = self.ysize/2
+        x_c = self.xsize/2.0-0.5
+        y_c = self.ysize/2.0-0.5
         for x in range(0,self.xsize):
             for y in range(0,self.ysize):
                 if ((x-x_c)**2 + (y-y_c) **2 <= radius**2):
@@ -122,8 +122,8 @@ class FITSCore (object):
         outname: File output name.
         overwite: If the output file exists, should it be overwritten? Defaults to False.
         """
-        x_c = self.xsize/2
-        y_c = self.ysize/2
+        x_c = self.xsize/2.0-0.5
+        y_c = self.ysize/2.0-0.5
         temp_field = np.zeros
         for x in range(0,self.xsize):
             for y in range(0,self.ysize):
