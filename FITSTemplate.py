@@ -54,11 +54,11 @@ class FITSCore (object):
             self.dec_val = config.getfloat("FOV","dec_val")
             self.px_size = config.getfloat("FOV","px_size")
         else:
-            self.xsize = xsize
-            self.ysize = ysize
-            self.RA_val = RA
-            self.dec_val = dec
-            self.px_size = px_size
+            self.xsize = int(xsize)
+            self.ysize = int(ysize)
+            self.RA_val = float(RA)
+            self.dec_val = float(dec)
+            self.px_size = float(px_size)
         self.field=np.zeros((self.xsize,self.ysize))
 
         
