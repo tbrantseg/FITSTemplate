@@ -27,6 +27,7 @@ parser.add_argument('-r','--radius', type=float, help='radius of disk model in d
 parser.add_argument('-s','--sigma', type=float, help='sigma of Gaussian model in degrees', required=False)
 parser.add_argument('-e','--epsilon', type=float, help='eccentricity of asymmetric Gaussian model(0->1, default=%f)'%epsilon, required=False)
 parser.add_argument('-t','--theta', type=float, help='rotation angle of asymmetric Gaussian model (degrees, default=%d)'%theta, required=False)
+parser.add_argument('-p','--projection', type=string, help='Projection type', required=False)
 
 # Parse the input arguments
 args = parser.parse_args()
@@ -50,8 +51,10 @@ if (args.epsilon is not None):
     epsilon=args.epsilon
 if (args.theta is not None):
     theta=args.theta
+if (args.projection is not None):
+    projection=args.projection
 
-ThisFits=FITSCore("",DefaultFits.xsize, DefaultFits.ysize, DefaultFits.RA_val, DefaultFits.dec_val, DefaultFits.px_size)
+ThisFits=FITSCore("",DefaultFits.xsize, DefaultFits.ysize, DefaultFits.RA_val, DefaultFits.dec_val, DefaultFits.px_size,projection)
 
 # Print some information about the model that is about to be produced
 print ''
@@ -65,6 +68,7 @@ print '   intensity : %f' % intensity
 print '   RA        : %f deg' % ThisFits.RA_val
 print '   Dec       : %+f deg' % ThisFits.dec_val
 print '   Type      : %s' % args.type
+print '   Projection: {0}'.format(projection)
 if (args.type=='disk'):
     print '   radius    : %f degrees' % args.radius
 elif(args.type=='gaus'):

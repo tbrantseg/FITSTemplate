@@ -10,6 +10,13 @@ import scipy.ndimage.interpolation as spr
 from astropy import wcs
 import ConfigParser
 
+# Global dictionary of fits header types
+headers = {}
+headers['TAN'] = ["RA---TAN","DEC--TAN"]
+headers['AIT'] = ["RA---AIT","DEC--AIT"]
+headers['GTAN'] = ["GLAT---TAN","GLON--TAN"]
+headers['GAIT'] = ["GLAT---AIT","GLON--AIT"]
+
 class FITSCore (object):
 
     def __init__ (self,\
@@ -18,7 +25,8 @@ class FITSCore (object):
                  ysize=None,\
                  RA=None,\
                  dec=None,\
-                 px_size=None):
+                 px_size=None,\
+                 projection="TAN"):
         """
         Class to hold basic data on creating a FITS template. This class must
         be instantiated before any templates are generated.
@@ -34,6 +42,15 @@ class FITSCore (object):
         RA: Decimal representation of the target right ascension.
         dec: Decimal representation of the target declination.
         px_size: Angular size of the FITS pixels in degrees.
+        projection: Projection on to the sky plane to be used:
+           "TAN": Tangential projection, used for small areas
+                "RA---TAN", "DEC--TAN"
+           "AIT": Aitoff projection, used by Fermi-LAT
+                "RA---AIT", "DEC--AIT"
+           "GTAN": Tangential projection with galactic coordinates
+                "GLAT---TAN", "GLON--TAN"
+           "GAIT": Aitoff projection with galactic coordinates
+                "GLAT---AIT", "GLON--AIT"
 
         Note that if both paramfile *and* the explicit arguments are given,
         the values in paramfile take priority.
@@ -59,6 +76,15 @@ class FITSCore (object):
             self.RA_val = float(RA)
             self.dec_val = float(dec)
             self.px_size = float(px_size)
+            self.projection = float(projection)
+
+        try:
+            self.header = headers[self.projection]
+        except KeyError:
+            print "Header type {0} not recognized. Defaulting to TAN projection."
+            self.header = headers['TAN']
+            
+        # This should be a dictionary, shouldn't it?
         self.field=np.zeros((self.xsize,self.ysize))
 
         
@@ -69,7 +95,7 @@ class FITSCore (object):
         w.wcs.crval = [self.RA_val,self.dec_val]
         w.wcs.cdelt = np.array([self.px_size*-1.0,self.px_size])
         w.wcs.crpix = [0.5+self.xsize/2.0,0.5+self.ysize/2.0]
-        w.wcs.ctype = ["RA---TAN","DEC--TAN"]
+        w.wcs.ctype = self.header
         header = w.to_header()
         hdu = fits.PrimaryHDU(self.field,header=header)
         try:
