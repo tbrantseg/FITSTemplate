@@ -27,7 +27,7 @@ parser.add_argument('-r','--radius', type=float, help='radius of disk model in d
 parser.add_argument('-s','--sigma', type=float, help='sigma of Gaussian model in degrees', required=False)
 parser.add_argument('-e','--epsilon', type=float, help='eccentricity of asymmetric Gaussian model(0->1, default=%f)'%epsilon, required=False)
 parser.add_argument('-t','--theta', type=float, help='rotation angle of asymmetric Gaussian model (degrees, default=%d)'%theta, required=False)
-parser.add_argument('-p','--projection', type=string, help='Projection type', required=False)
+parser.add_argument('-p','--projection', type=str, help='Projection type', required=False)
 
 # Parse the input arguments
 args = parser.parse_args()
