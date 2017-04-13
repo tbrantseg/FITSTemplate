@@ -70,13 +70,14 @@ class FITSCore (object):
             self.RA_val = config.getfloat("FOV","RA_val")
             self.dec_val = config.getfloat("FOV","dec_val")
             self.px_size = config.getfloat("FOV","px_size")
+            self.projection = ""
         else:
             self.xsize = int(xsize)
             self.ysize = int(ysize)
             self.RA_val = float(RA)
             self.dec_val = float(dec)
             self.px_size = float(px_size)
-            self.projection = float(projection)
+            self.projection = str(projection)
 
         try:
             self.header = headers[self.projection]
@@ -229,5 +230,33 @@ class FITSCore (object):
              Defaults to False.
         """
         self.EllipticalGaussianTemplate(FWHM,peak,0,0,outname,overwrite)
+
+    def AnnularTemplate(self,r_in,r_out,intensity,outname,overwrite=False):
+        """
+        Generate an annular source.
+
+        Function Call:
+        -------------
+        FITSCore.AnnularTemplate(r_in,r_out,intensity,outname,[outname=False])
+        
+
+        Arguments:
+        ---------
+        r_in: annulus inner radius
+        r_out: annulus outer radius
+        intensity: value to set template pixels to
+        outname: Name of the outputfile
+        overwite(optional): If the output file exists, should it be overwritten?
+        
+        """
+        x_c = self.xsize/2.0-0.5
+        y_c = self.ysize/2.0/0.5
+        for x in range(0,self.xsize):
+            for y in range(0,self.ysize):
+                r = ((x-x_c)**2) + ((y-y_c)**2)
+                if (r <= r_out and r >= r_in):                    
+                    self.field[x][y] = intensity
+        if outname:
+            self._SaveToFITS(outname,overwrite)
 
 # FITSTemplate.py ends here
