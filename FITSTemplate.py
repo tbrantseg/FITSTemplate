@@ -239,7 +239,6 @@ class FITSCore (object):
         -------------
         FITSCore.AnnularTemplate(r_in,r_out,intensity,outname,[outname=False])
         
-
         Arguments:
         ---------
         r_in: annulus inner radius
@@ -259,4 +258,49 @@ class FITSCore (object):
         if outname:
             self._SaveToFITS(outname,overwrite)
 
+    def AddArray(self,Array1,Array2,Startx,Starty):
+        """
+        Transforms an Array into an Template
+
+        Function Call:
+        -------------
+        FITSCore.ArrayTemplate(Array1,Array2,Startx,Starty)
+        
+        Arguments:
+        ---------
+        Array1: The main(bigger) array
+        Array2: The Array(smaller) being compared inside the first
+        Startx: where the Array will start comparing from x axis
+        Starty: where the Array will start comparing from the y axis(from the top)
+        """
+        def change(arr,x,y,val):
+            arr[y][x] = val
+            return arr
+        Temp1 = Array1
+        Temp2 = Array2
+        Com =np.zeros((len(Array1),len(Array1[1])))
+        x1 = Startx
+        y1 = Starty
+        x2 = 0
+        y2 = 0
+        row = 0
+        point1 = Array1[y1][x1]
+        point2 = Array2[y2][x2]
+        for i in range(len(Array2[1])-1):
+            for i in range(len(Array2)-row):
+                if Array1[y1][x1] != Array2[y2][x2]:
+                    change(Array1,x1,y1,Array2[y2][x2])
+                y1 += 1
+                y2 += 1
+            y1 -= 1
+            y2 -= 1
+            for i in range(len(Array2[1])-row):
+                if Array1[y1][x1] != Array2[y2][x2]:
+                    change(Array1,x1,y1,Array2[y2][x2])
+                x1 += 1
+                x2 += 1
+            x1 -= 1
+            x2 -= 1
+            row += 1
+        return(Array1)
 # FITSTemplate.py ends here
