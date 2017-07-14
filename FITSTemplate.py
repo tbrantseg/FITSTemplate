@@ -268,10 +268,10 @@ class FITSCore (object):
         
         Arguments:
         ---------
-        Array1: The main(bigger) array
-        Array2: The Array(smaller) being compared inside the first
-        Startx: where the Array will start comparing from x axis
-        Starty: where the Array will start comparing from the y axis(from the top)
+        Array1: The main(bigger) being added to array
+        Array2: The Array(smaller) being added inside the first
+        Startx: where the Array will start adding from x axis
+        Starty: where the Array will start adding from the y axis(from the top)
         """
         def change(arr,x,y,val):
             arr[y][x] = val
@@ -303,4 +303,45 @@ class FITSCore (object):
             x2 -= 1
             row += 1
         return(Array1)
+    
+    def Spread(self,Array):
+        """
+        Checks around an Array starting from the middle.
+
+        Function Call:
+        -------------
+        FITSCore.Spread(Array)"""
+
+        def Centerpoint(arr):
+            y = len(arr)/2
+            x = len(arr[1])/2
+            change(arr,x,y,1)
+            return(x,y)
+        def change(arr,x,y,val):
+            arr[y][x] = val
+            return arr
+        x,y = Centerpoint(Array)
+        Center = Array[y][x]
+        cha = 1
+        while cha <= 2:
+            for i in range(cha):
+                y+=1
+                change(Array,x,y,1)
+            for i in range(cha):
+                x+=1
+                change(Array,x,y,1)
+            cha+=1
+            for i in range(cha):
+                y-=1
+                change(Array,x,y,1)
+            for i in range(cha):
+                x-=1
+                change(Array,x,y,1)
+            cha+=1
+            break
+        for i in range(2):
+            y+=1
+            change(Array,x,y,1)
+        x+=1
+        return(Array)
 # FITSTemplate.py ends here

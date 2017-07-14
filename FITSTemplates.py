@@ -63,7 +63,9 @@ class FITSCore (object):
              intensity.
         """
         self._key = 0
+        self._lock = 0
         self.config_dict = dict()
+        self.save_dict = dict()
         self.ts_dict = dict()
         if (os.path.isfile(paramfile)):
             config=ConfigParser.RawConfigParser()
@@ -306,46 +308,38 @@ class FITSCore (object):
             row += 1
         return(Array1)
     
-    def Swaz(self,Array):
+    def Swaz(self,Array,val):
         """
         Checks around an Array starting from the middle.
 
         Function Call:
         -------------
         FITSCore.Swaz(Array)"""
-        self.config_dict[self._key] = Array
-        def Centerpoint(arr):
-            y = len(arr)/2
-            x = len(arr[1])/2
-            return(x,y)
-        def change(arr,x,y,val):
-            arr[y][x] = val
-            return arr
-        def point(x,y):
-            x = x
-            y = y
-            return(x,y)
-        def ReadFile(filename,compare):
+        y_c = len(Array)/2
+        x_c = len(Array[1])/2
+        '''def ReadFile(filename,compare):
             with open(filename) as F:
                 for lines in F:
                     if lines.strip('\n') == compare:
                         return(True)
                     else:
-                        return(False)
-        x,y = Centerpoint(Array)
+                        return(False)'''
+        x, y = (x_c, y_c)
         Center = Array[y][x]
         def check(x,y):
-            self.config_dict[self._key] = Array
-            point = Array[y][x]
+            fake = Array
             #if ReadFile(filename,compare) == True
-            change(Array,x,y,1)
+            fake[x][y] = val
             y-=1
-            change(Array,x,y,1)
+            fake[x][y] = val
             x-=1
-            change(Array,x,y,1)
+            fake[x][y] = val
             y+=1
-            change(Array,x,y,1)
+            fake[x][y] = val
             x+=1
+            self.config_dict[self._key] = fake
+            savage = self.config_dict[self._key]
+            self.save_dict[self._key] = savage
             self._key+=1
         check(x,y)
         RD = 0
@@ -370,7 +364,7 @@ class FITSCore (object):
                 except IndexError:
                     break
         #checks down and to the left (and bottom right 4 rows.
-        x,y = Centerpoint(Array)
+        x,y = (x_c, y_c)
         while DL <= len(Array)*len(Array[1]):
             DL+=1
             try:
@@ -390,7 +384,7 @@ class FITSCore (object):
                 except IndexError:                   
                     break
         #checks to the left and up
-        x,y = Centerpoint(Array)
+        x,y = (x_c, y_c)
         while LU <= len(Array)*len(Array[1]):
             LU+=1
             if x > 1:
@@ -406,7 +400,7 @@ class FITSCore (object):
                     y = len(Array)/2
                     break
         #checks up and to the right
-        x,y = Centerpoint(Array)
+        x,y = (x_c, y_c)
         while UR <= len(Array)*len(Array[1]):
             UR +=1
             try:
@@ -420,6 +414,6 @@ class FITSCore (object):
             except IndexError:
                 x = len(Array[1])/2
                 continue
-        print(self.ts_dict)
+        print(self.save_dict)
         return(Array)
 # FITSTemplate.py ends here
