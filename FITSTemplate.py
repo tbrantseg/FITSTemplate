@@ -12,15 +12,15 @@ import ConfigParser
 
 # Global dictionary of fits header types
 headers = {}
-headers['TAN'] = ["RA---TAN","DEC--TAN"]
-headers['AIT'] = ["RA---AIT","DEC--AIT"]
-headers['GTAN'] = ["GLAT---TAN","GLON--TAN"]
-headers['GAIT'] = ["GLAT---AIT","GLON--AIT"]
+headers["TAN"] = ["RA---TAN","DEC--TAN"]
+headers["AIT"] = ["RA---AIT","DEC--AIT"]
+headers["GTAN"] = ["GLAT-TAN","GLON-TAN"]
+headers["GAIT"] = ["GLAT-AIT","GLON-AIT"]
 
 class FITSCore (object):
 
     def __init__ (self,\
-                 paramfile="template.cfg",\
+                 paramfile="",\
                  xsize=None,\
                  ysize=None,\
                  RA=None,\
