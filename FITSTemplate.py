@@ -82,7 +82,7 @@ class FITSCore (object):
         try:
             self.header = headers[self.projection]
         except KeyError:
-            print "Header type {0} not recognized. Defaulting to TAN projection."
+            print "Header type {0} not recognized. Defaulting to TAN projection.".format(self.header)
             self.header = headers['TAN']
             
         # This should be a dictionary, shouldn't it?
