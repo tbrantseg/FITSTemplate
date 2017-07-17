@@ -63,9 +63,7 @@ class FITSCore (object):
              intensity.
         """
         self._key = 0
-        self._lock = 0
         self.config_dict = dict()
-        self.save_dict = dict()
         self.ts_dict = dict()
         if (os.path.isfile(paramfile)):
             config=ConfigParser.RawConfigParser()
@@ -308,7 +306,22 @@ class FITSCore (object):
             row += 1
         return(Array1)
     
-    def Swaz(self,Array,val):
+    def check(self,arr,x,y,val):
+        #if ReadFile(filename,compare) == True
+        arr[y][x] = val
+        y-=1
+        arr[y][x] = val
+        x-=1
+        arr[y][x] = val
+        y+=1
+        arr[y][x] = val
+        x+=1
+        self.config_dict[self._key] = arr.copy()
+        self._key+=1
+
+    def Test(self):
+        print("HI")
+    def Swaz(self,Array):
         """
         Checks around an Array starting from the middle.
 
@@ -326,22 +339,7 @@ class FITSCore (object):
                         return(False)'''
         x, y = (x_c, y_c)
         Center = Array[y][x]
-        def check(x,y):
-            fake = Array
-            #if ReadFile(filename,compare) == True
-            fake[x][y] = val
-            y-=1
-            fake[x][y] = val
-            x-=1
-            fake[x][y] = val
-            y+=1
-            fake[x][y] = val
-            x+=1
-            self.config_dict[self._key] = fake
-            savage = self.config_dict[self._key]
-            self.save_dict[self._key] = savage
-            self._key+=1
-        check(x,y)
+        self.check(Array,x,y,0)
         RD = 0
         DL = 0
         LU = 0
@@ -351,12 +349,12 @@ class FITSCore (object):
             RD+=1
             try:
                 x+=1
-                check(x,y)
+                self.check(Array,x,y,1)
                 x+=1
-                check(x,y)
+                self.check(Array,x,y,1)
                 while RD <= len(Array)*len(Array[1]):
                     y+=1
-                    check(x,y)
+                    self.check(Array,x,y,1)
             except IndexError:
                 y = len(Array)/2
                 try:
@@ -370,14 +368,14 @@ class FITSCore (object):
             try:
                 if y > 0:
                     y+=1
-                    check(x,y)
+                    self.check(Array,x,y,2)
             except IndexError:
                 break
             while DL <= len(Array)*len(Array[1]):
                 try:
                     if x > 1:
                         x-=1
-                        check(x,y)
+                        self.check(Array,x,y,2)
                     else:
                         x = len(Array[1])/2
                         break
@@ -389,13 +387,13 @@ class FITSCore (object):
             LU+=1
             if x > 1:
                 x-=1
-                check(x,y)
+                self.check(Array,x,y,3)
             else:
                 break
             while LU <= len(Array)*len(Array[1]):
                 if y > 1:
                     y -= 1
-                    check(x,y)
+                    self.check(Array,x,y,3)
                 else:
                     y = len(Array)/2
                     break
@@ -406,14 +404,13 @@ class FITSCore (object):
             try:
                 if y > 1:
                     y-=1
-                    check(x,y)
+                    self.check(Array,x,y,4)
                 while UR <= len(Array)*len(Array[1]):
                     if x <= len(Array[1]):
                         x+=1
-                        check(x,y)
+                        self.check(Array,x,y,4)
             except IndexError:
                 x = len(Array[1])/2
                 continue
-        print(self.save_dict)
         return(Array)
 # FITSTemplate.py ends here
