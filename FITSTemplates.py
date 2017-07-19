@@ -280,7 +280,6 @@ class FITSCore (object):
             return arr
         Temp1 = Array1
         Temp2 = Array2
-        Com =np.zeros((len(Array1),len(Array1[1])))
         x1 = Startx
         y1 = Starty
         x2 = 0
@@ -303,7 +302,21 @@ class FITSCore (object):
                 x2 += 1
             x1 -= 1
             x2 -= 1
+            for i in range(len(Array2)-row):
+                if Array1[y1][x1] != Array2[y2][x2]:
+                    change(Array1,x1,y1,Array2[y2][x2])
+                y1 -= 1
+                y2 -= 1
+            y1 += 1
+            y2 += 2
             row += 1
+            for i in range(len(Array2[1])-row):
+                if Array1[y1][x1] != Array2[y2][x2]:
+                    change(Array1,x1,y1,Array2[y2][x2])
+                x1 -= 1
+                x2 -= 1
+            x1 += 1
+            x2 += 1               
         return(Array1)
     
     def check(self,arr,x,y,val):
@@ -319,8 +332,13 @@ class FITSCore (object):
         self.config_dict[self._key] = arr.copy()
         self._key+=1
 
-    def Test(self):
-        print("HI")
+    def Test(self,arr):
+        y_c = len(arr)/2
+        x_c = len(arr[1])/2
+        x, y = (x_c, y_c)
+        Center = arr[y][x]
+        self.check(arr,x,y,1)
+        return(arr)
     def Swaz(self,Array):
         """
         Checks around an Array starting from the middle.
@@ -328,8 +346,6 @@ class FITSCore (object):
         Function Call:
         -------------
         FITSCore.Swaz(Array)"""
-        y_c = len(Array)/2
-        x_c = len(Array[1])/2
         '''def ReadFile(filename,compare):
             with open(filename) as F:
                 for lines in F:
@@ -337,9 +353,6 @@ class FITSCore (object):
                         return(True)
                     else:
                         return(False)'''
-        x, y = (x_c, y_c)
-        Center = Array[y][x]
-        self.check(Array,x,y,0)
         RD = 0
         DL = 0
         LU = 0
