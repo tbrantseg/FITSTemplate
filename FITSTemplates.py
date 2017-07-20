@@ -339,7 +339,8 @@ class FITSCore (object):
         Center = arr[y][x]
         self.check(arr,x,y,1)
         return(arr)
-    def Swaz(self,Array):
+    
+    def Around(self,Array):
         """
         Checks around an Array starting from the middle.
 
