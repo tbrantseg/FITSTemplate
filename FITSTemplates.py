@@ -63,6 +63,7 @@ class FITSCore (object):
              intensity.
         """
         self._key = 0
+        self._Count = 0
         self.config_dict = dict()
         self.ts_dict = dict()
         if (os.path.isfile(paramfile)):
@@ -321,24 +322,139 @@ class FITSCore (object):
     
     def check(self,arr,x,y,val):
         #if ReadFile(filename,compare) == True
-        arr[y][x] = val
+        if arr[y][x] != val:
+            arr[y][x] = val
+            self._SaveToFITS("template_{0}.fits".format(self._Count),True)
+            self._Count += 1
         y-=1
-        arr[y][x] = val
+        if arr[y][x] != val:
+            arr[y][x] = val
+            self._SaveToFITS("template_{0}.fits".format(self._Count),True)
+            self._Count += 1           
         x-=1
-        arr[y][x] = val
+        if arr[y][x] != val:
+            arr[y][x] = val
+            self._SaveToFITS("template_{0}.fits".format(self._Count),True)
+            self._Count += 1
         y+=1
-        arr[y][x] = val
+        if arr[y][x] != val:
+            arr[y][x] = val
+            self._SaveToFITS("template_{0}.fits".format(self._Count),True)
+            self._Count += 1
         x+=1
         self.config_dict[self._key] = arr.copy()
         self._key+=1
 
+    def Altcheck(self,arr,x,y,seedx,seedy,val,startpoint="Center",ydirection="Up"):
+        """
+        Transforms an Array into an Template
+
+        Function Call:
+        -------------
+        FITSCore.Altcheck(arr,x,y,seedx,seedy,val)
+        
+        Arguments:
+        ---------
+        arr: The Array being checked
+        x: starting point from the x axis
+        y: starting point from the y axis (from the top)
+        seedx: size of the x axis of the seed
+        seedy: size of the y axis of the seed
+        val: Number that will be used to fill up the seed
+        startpoint: Where to start the seed (Left,Right,or Center)
+        ydirection: The direction that the seed should go in (Up or Down)
+        """
+        vert = 0
+        if ydirection == "Up":
+            step = -1
+        if ydirection == "Down":
+            step = 1
+        if arr[y][x] != val:
+            arr[y][x] = val
+        if startpoint == 'Center':
+            for i in range(seedx/2):
+                x -= 1
+                if arr[y][x] != val:
+                    arr[y][x] = val
+            for i in range(seedx - 1):
+                x += 1
+                if arr[y][x] != val:
+                    arr[y][x] = val
+        if startpoint == "Left":
+            for i in range(seedx - 1):
+                x += 1
+                if arr[y][x] != val:
+                    arr[y][x] = val
+        if startpoint == "Right":
+            for i in range(seedx - 1):
+                x -= 1
+                if arr[y][x] != val:
+                    arr[y][x] = val
+            for i in range(seedy):
+                vert += 1
+                if vert == seedy:
+                    return(arr)
+                else:
+                    for i in range(seedy):
+                        y += step
+                        if arr[y][x] != val:
+                            arr[y][x] = val
+                        for i in range(seedx-1):
+                            x += 1
+                            if arr[y][x] != val:
+                                arr[y][x] = val
+                        vert += 1
+                        if vert == seedy:
+                            return(arr)
+                        else:
+                            y += step
+                            if arr[y][x] != val:
+                                arr[y][x] = val
+                            for i in range(seedx-1):
+                                x -= 1
+                                if arr[y][x] != val:
+                                    arr[y][x] = val
+                        vert += 1
+                        if vert == seedy:
+                            return(arr)
+                        else:
+                            continue       
+        vert += 1
+        if vert == seedy:
+            return(arr)
+        else:
+            for i in range(seedy):
+                y += step
+                if arr[y][x] != val:
+                  arr[y][x] = val
+                for i in range(seedx-1):
+                    x -= 1
+                    if arr[y][x] != val:
+                        arr[y][x] = val
+                vert += 1
+                if seedy == vert:
+                    break
+                else:
+                    y += step
+                    if arr[y][x] != val:
+                        arr[y][x] = val
+                    for i in range(seedx-1):
+                        x += 1
+                        if arr[y][x] != val:
+                            arr[y][x] = val
+                vert += 1
+                if vert == seedy:
+                    break
+                else:
+                    continue
+                
+        return(arr)
     def Test(self,arr):
         y_c = len(arr)/2
         x_c = len(arr[1])/2
         x, y = (x_c, y_c)
         Center = arr[y][x]
         self.check(arr,x,y,1)
-        return(arr)
     
     def Around(self,Array):
         """
@@ -346,14 +462,13 @@ class FITSCore (object):
 
         Function Call:
         -------------
-        FITSCore.Swaz(Array)"""
-        '''def ReadFile(filename,compare):
-            with open(filename) as F:
-                for lines in F:
-                    if lines.strip('\n') == compare:
-                        return(True)
-                    else:
-                        return(False)'''
+        FITSCore"""
+        y_c = len(Array)/2
+        x_c = len(Array[1])/2
+        x = x_c
+        y = y_c
+        self.check(Array,x,y,1)
+        Count = 0
         RD = 0
         DL = 0
         LU = 0
@@ -362,8 +477,6 @@ class FITSCore (object):
         while RD <= len(Array)*len(Array[1]):
             RD+=1
             try:
-                x+=1
-                self.check(Array,x,y,1)
                 x+=1
                 self.check(Array,x,y,1)
                 while RD <= len(Array)*len(Array[1]):
@@ -382,14 +495,14 @@ class FITSCore (object):
             try:
                 if y > 0:
                     y+=1
-                    self.check(Array,x,y,2)
+                    self.check(Array,x,y,1)
             except IndexError:
                 break
             while DL <= len(Array)*len(Array[1]):
                 try:
                     if x > 1:
                         x-=1
-                        self.check(Array,x,y,2)
+                        self.check(Array,x,y,1)
                     else:
                         x = len(Array[1])/2
                         break
@@ -401,13 +514,13 @@ class FITSCore (object):
             LU+=1
             if x > 1:
                 x-=1
-                self.check(Array,x,y,3)
+                self.check(Array,x,y,1)
             else:
                 break
             while LU <= len(Array)*len(Array[1]):
                 if y > 1:
                     y -= 1
-                    self.check(Array,x,y,3)
+                    self.check(Array,x,y,1)
                 else:
                     y = len(Array)/2
                     break
@@ -418,13 +531,16 @@ class FITSCore (object):
             try:
                 if y > 1:
                     y-=1
-                    self.check(Array,x,y,4)
+                    self.check(Array,x,y,1)
                 while UR <= len(Array)*len(Array[1]):
                     if x <= len(Array[1]):
                         x+=1
-                        self.check(Array,x,y,4)
+                        self.check(Array,x,y,1)
             except IndexError:
-                x = len(Array[1])/2
-                continue
+                if Array[0][len(Array)-1] == 1:
+                    break
+                else:
+                   x = len(Array[1])/2
+                   continue
         return(Array)
 # FITSTemplate.py ends here
