@@ -371,25 +371,35 @@ class FITSCore (object):
             step = 1
         if arr[y][x] != val:
             arr[y][x] = val
+            self._SaveToFITS("template_{0}.fits".format(self._Count),True)
+            self._Count += 1
         if startpoint == 'Center':
             for i in range(seedx/2):
                 x -= 1
                 if arr[y][x] != val:
                     arr[y][x] = val
+                    self._SaveToFITS("template_{0}.fits".format(self._Count),True)
+                    self._Count += 1
             for i in range(seedx - 1):
                 x += 1
                 if arr[y][x] != val:
                     arr[y][x] = val
+                    self._SaveToFITS("template_{0}.fits".format(self._Count),True)
+                    self._Count += 1
         if startpoint == "Left":
             for i in range(seedx - 1):
                 x += 1
                 if arr[y][x] != val:
                     arr[y][x] = val
+                    self._SaveToFITS("template_{0}.fits".format(self._Count),True)
+                    self._Count += 1
         if startpoint == "Right":
             for i in range(seedx - 1):
                 x -= 1
                 if arr[y][x] != val:
                     arr[y][x] = val
+                    self._SaveToFITS("template_{0}.fits".format(self._Count),True)
+                    self._Count += 1
             for i in range(seedy):
                 vert += 1
                 if vert == seedy:
@@ -399,10 +409,14 @@ class FITSCore (object):
                         y += step
                         if arr[y][x] != val:
                             arr[y][x] = val
+                            self._SaveToFITS("template_{0}.fits".format(self._Count),True)
+                            self._Count += 1
                         for i in range(seedx-1):
                             x += 1
                             if arr[y][x] != val:
                                 arr[y][x] = val
+                                self._SaveToFITS("template_{0}.fits".format(self._Count),True)
+                                self._Count += 1
                         vert += 1
                         if vert == seedy:
                             return(arr)
@@ -410,10 +424,14 @@ class FITSCore (object):
                             y += step
                             if arr[y][x] != val:
                                 arr[y][x] = val
+                                self._SaveToFITS("template_{0}.fits".format(self._Count),True)
+                                self._Count += 1
                             for i in range(seedx-1):
                                 x -= 1
                                 if arr[y][x] != val:
                                     arr[y][x] = val
+                                    self._SaveToFITS("template_{0}.fits".format(self._Count),True)
+                                    self._Count += 1
                         vert += 1
                         if vert == seedy:
                             return(arr)
@@ -426,11 +444,15 @@ class FITSCore (object):
             for i in range(seedy):
                 y += step
                 if arr[y][x] != val:
-                  arr[y][x] = val
+                    arr[y][x] = val
+                    self._SaveToFITS("template_{0}.fits".format(self._Count),True)
+                    self._Count += 1
                 for i in range(seedx-1):
                     x -= 1
                     if arr[y][x] != val:
                         arr[y][x] = val
+                        self._SaveToFITS("template_{0}.fits".format(self._Count),True)
+                        self._Count += 1
                 vert += 1
                 if seedy == vert:
                     break
@@ -438,17 +460,21 @@ class FITSCore (object):
                     y += step
                     if arr[y][x] != val:
                         arr[y][x] = val
+                        self._SaveToFITS("template_{0}.fits".format(self._Count),True)
+                        self._Count += 1
                     for i in range(seedx-1):
                         x += 1
                         if arr[y][x] != val:
                             arr[y][x] = val
+                            self._SaveToFITS("template_{0}.fits".format(self._Count),True)
+                            self._Count += 1
                 vert += 1
                 if vert == seedy:
                     break
                 else:
-                    continue
-                
+                    continue               
         return(arr)
+    
     def Test(self,arr):
         y_c = len(arr)/2
         x_c = len(arr[1])/2
@@ -456,18 +482,19 @@ class FITSCore (object):
         Center = arr[y][x]
         self.check(arr,x,y,1)
     
-    def Around(self,Array):
+    def Around(self,Array,Step,seedx,seedy,val):
         """
         Checks around an Array starting from the middle.
 
         Function Call:
         -------------
-        FITSCore"""
+        FITSCore.Around(arr,Step)
+        """
         y_c = len(Array)/2
         x_c = len(Array[1])/2
         x = x_c
         y = y_c
-        self.check(Array,x,y,1)
+        self.Altcheck(Array,x,y,seedx,seedy,val)
         Count = 0
         RD = 0
         DL = 0
@@ -477,11 +504,11 @@ class FITSCore (object):
         while RD <= len(Array)*len(Array[1]):
             RD+=1
             try:
-                x+=1
-                self.check(Array,x,y,1)
+                x+=Step
+                self.Altcheck(Array,x,y,seedx,seedy,val)
                 while RD <= len(Array)*len(Array[1]):
-                    y+=1
-                    self.check(Array,x,y,1)
+                    y+=Step
+                    self.Altcheck(Array,x,y,seedx,seedy,val)
             except IndexError:
                 y = len(Array)/2
                 try:
@@ -494,15 +521,15 @@ class FITSCore (object):
             DL+=1
             try:
                 if y > 0:
-                    y+=1
-                    self.check(Array,x,y,1)
+                    y+=Step
+                    self.Altcheck(Array,x,y,seedx,seedy,val)
             except IndexError:
                 break
             while DL <= len(Array)*len(Array[1]):
                 try:
                     if x > 1:
-                        x-=1
-                        self.check(Array,x,y,1)
+                        x-=Step
+                        self.Altcheck(Array,x,y,seedx,seedy,val)
                     else:
                         x = len(Array[1])/2
                         break
@@ -513,14 +540,14 @@ class FITSCore (object):
         while LU <= len(Array)*len(Array[1]):
             LU+=1
             if x > 1:
-                x-=1
-                self.check(Array,x,y,1)
+                x-=Step
+                self.Altcheck(Array,x,y,seedx,seedy,val)
             else:
                 break
             while LU <= len(Array)*len(Array[1]):
                 if y > 1:
-                    y -= 1
-                    self.check(Array,x,y,1)
+                    y -= Step
+                    self.Altcheck(Array,x,y,seedx,seedy,val)
                 else:
                     y = len(Array)/2
                     break
@@ -530,12 +557,12 @@ class FITSCore (object):
             UR +=1
             try:
                 if y > 1:
-                    y-=1
-                    self.check(Array,x,y,1)
+                    y-=Step
+                    self.Altcheck(Array,x,y,seedx,seedy,val)
                 while UR <= len(Array)*len(Array[1]):
                     if x <= len(Array[1]):
-                        x+=1
-                        self.check(Array,x,y,1)
+                        x+=Step
+                        self.Altcheck(Array,x,y,seedx,seedy,val)
             except IndexError:
                 if Array[0][len(Array)-1] == 1:
                     break
