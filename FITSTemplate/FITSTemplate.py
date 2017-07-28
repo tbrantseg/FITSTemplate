@@ -250,10 +250,10 @@ class FITSCore (object):
         
         """
         x_c = self.xsize/2.0-0.5
-        y_c = self.ysize/2.0/0.5
+        y_c = self.ysize/2.0-0.5
         for x in range(0,self.xsize):
             for y in range(0,self.ysize):
-                r = ((x-x_c)**2) + ((y-y_c)**2)
+                r = np.sqrt((x-x_c)**2) + ((y-y_c)**2)
                 if (r <= r_out and r >= r_in):                    
                     self.field[x][y] = intensity
         if outname:
