@@ -6,7 +6,8 @@ from astropy.io import fits
 from astropy import units as u
 from astropy.coordinates import SkyCoord
 import numpy as np
-import scipy.ndimage.interpolation as spr
+#import scipy.ndimage.interpolation as spr
+import skimage.transform as skt
 from astropy import wcs
 import ConfigParser
 
@@ -90,6 +91,8 @@ class FITSCore (object):
 
         
     def _SaveToFITS (self, outname, overwrite):
+        # FIXME: Galactic coordinate inputs not handled correctly
+        # FIXME: Cos dec size distortion issue? Might be upstream
         w = wcs.WCS(naxis=2)
         xvals = np.arange(0,self.xsize)
         yvals = np.arange(0,self.ysize)
@@ -160,10 +163,12 @@ class FITSCore (object):
                     elif y < y_c:
                         self.field[x][y] = intensity_b
         # Now rotate
-        spr.rotate(input = self.field,\
-                                        angle = split_angle,\
-                                        reshape = False,\
-                                        output = self.field)
+        # spr.rotate(input = self.field,\
+        #                                 angle = split_angle,\
+        #                                 reshape = False,\
+        #                                 output = self.field)
+        # FIXME: Rotate function results in values that are not the two intended values; maybe just use a rotation matrix here
+        self.field=skt.rotate(image=self.field, angle=split_angle,center=(x_c,y_c))
         # Kill any junk outside the intended radius
         for x in range(0,self.xsize):
             for y in range(0,self.ysize):

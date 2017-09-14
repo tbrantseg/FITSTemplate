@@ -7,6 +7,7 @@ setup(name='fitstemplate',
       install_requires=[
           'numpy',
           'scipy',
+          'scikit-image',
           'astropy',
           'future'
       ],
