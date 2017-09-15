@@ -215,8 +215,8 @@ class FITSCore (object):
                 y_o = (y-y_c)*np.cos(theta) - (x-x_c)*np.sin(theta)
                 r = np.sqrt(((x_o**2 * ellip**2) + y_o**2)/ellip)
                 self.field[x][y]=peak*np.e**(-gauss_c*(r/FWHM)**2)
-        self._SaveToFITS(outname, overwrite)
-
+        if outname:           
+            self._SaveToFITS(outname, overwrite)
         
     def GaussianTemplate (self, FWHM, peak, outname,overwrite=False):
         """
@@ -261,6 +261,19 @@ class FITSCore (object):
                 r = np.sqrt((x-x_c)**2) + ((y-y_c)**2)
                 if (r <= r_out and r >= r_in):                    
                     self.field[x][y] = intensity
+        if outname:
+            self._SaveToFITS(outname,overwrite)
+
+    def DiffusionProfileTemplate(self, r_d, norm, outname, overwrite=False):
+        """
+        Generate a symmetric template with a diffusion radial brightness profile
+        """        
+        x_c = self.xsize/2.0-0.5
+        y_c = self.ysize/2.0-0.5
+        for x in range(0, self.xsize):
+            for y in range(0, self.ysize):
+                r = np.sqrt((x-x_c)**2) + ((y-y_c)**2)
+                self.field[x][y] = norm/(r_d*(r+0.06*r_d))*np.exp(-(r**2)/(r_d**2))
         if outname:
             self._SaveToFITS(outname,overwrite)
 
