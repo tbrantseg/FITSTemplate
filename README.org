@@ -29,6 +29,8 @@ cd FITSTemplate
 python setup.py install
 #+END_EXAMPLE
 
+The dependencies above *should* be automatically installed if they are not already present, but this might not work at present.
+
 ** Brief usage
 - Instantiate =FITSCore=.
 - Call the appropriate template generation function, specifying the output file name.
