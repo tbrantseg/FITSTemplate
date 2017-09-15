@@ -6,7 +6,28 @@
 - [[http://www.numpy.org][NumPy]]
 - [[http://www.scipy.org][SciPy]]
 
-These packages can be installed in a variety of means; MacPorts/homebrew, pip, or installing from source.
+** Getting Started
+*** Prerequisites
+FITSTemplate uses the =setuptools= build system for installation. In the (unlikely) event your python installation doesn't include setuptools, install it with
+#+BEGIN_EXAMPLE
+pip install setuptools
+#+END_EXAMPLE
+
+In the even more unlikely case that your python installation is also missing =pip=, first install that with
+#+BEGIN_EXAMPLE
+curl https://bootstrap.pypa.io/get-pip.py
+python get-pip.py
+#+END_EXAMPLE
+
+and then install =setuptools=.
+
+*** Installation
+Once =setuptools= is installed, you can download and install with
+#+BEGIN_EXAMPLE
+git clone https://github.com/tbrantseg/FITSTemplate.git
+cd FITSTemplate
+python setup.py install
+#+END_EXAMPLE
 
 ** Brief usage
 - Instantiate =FITSCore=.
