@@ -13,4 +13,4 @@ setup(name='fitstemplate',
       ],
       zip_safe=False)
 
-# setup.py<FITSTemplate> ends here
+# setup.py ends here

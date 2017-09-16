@@ -15,21 +15,21 @@ pip install setuptools
 
 In the even more unlikely case that your python installation is also missing =pip=, first install that with
 #+BEGIN_EXAMPLE
-curl https://bootstrap.pypa.io/get-pip.py
-python get-pip.py
+curl https://bootstrap.pypa.io/get-pip.py | python
 #+END_EXAMPLE
 
-and then install =setuptools=.
+and then install =setuptools= as above.
 
 *** Installation
 Once =setuptools= is installed, you can download and install with
 #+BEGIN_EXAMPLE
 git clone https://github.com/tbrantseg/FITSTemplate.git
 cd FITSTemplate
+pip install -r requirements.txt
 python setup.py install
 #+END_EXAMPLE
 
-The dependencies above *should* be automatically installed if they are not already present, but this might not work at present.
+The dependency libraries should be automatically installed.
 
 ** Brief usage
 - Instantiate =FITSCore=.

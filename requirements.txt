@@ -1,0 +1,7 @@
+numpy
+scipy
+scikit-image
+astropy
+future
+
+# requirements.txt ends here
