@@ -78,7 +78,7 @@ class FITSCore (object):
             self.RA_val = float(RA)
             self.dec_val = float(dec)
             self.px_size = float(px_size)
-            self.projection = str(projection)
+            self.projection = str(projection)            
 
         try:
             self.header = headers[self.projection]
@@ -88,6 +88,8 @@ class FITSCore (object):
             
         # This should be a dictionary, shouldn't it?
         self.field=np.zeros((self.xsize,self.ysize))
+        self.x_c = self.xsize/2.0-0.5
+        self.y_c = self.ysize/2.0-0.5
 
         
     def _SaveToFITS (self, outname, overwrite):
@@ -124,11 +126,9 @@ class FITSCore (object):
         overwrite(optional): If the output file exists, should it be overwritten?
              Defaults to False.
         """
-        x_c = self.xsize/2.0-0.5
-        y_c = self.ysize/2.0-0.5
         for x in range(0,self.xsize):
             for y in range(0,self.ysize):
-                if ((x-x_c)**2 + (y-y_c) **2 <= radius**2):
+                if ((x-self.x_c)**2 + (y-self.y_c) **2 <= radius**2):
                     self.field[x][y] = intensity
         if outname:
             self._SaveToFITS(outname,overwrite)
@@ -152,15 +152,13 @@ class FITSCore (object):
         outname: File output name.
         overwite: If the output file exists, should it be overwritten? Defaults to False.
         """
-        x_c = self.xsize/2.0-0.5
-        y_c = self.ysize/2.0-0.5
         temp_field = np.zeros
         for x in range(0,self.xsize):
             for y in range(0,self.ysize):
-                if (x-x_c)**2 + (y-y_c)**2 <= radius**2:
-                    if y >= y_c:
+                if (x-self.x_c)**2 + (y-self.y_c)**2 <= radius**2:
+                    if y >= self.y_c:
                         self.field[x][y] = intensity_a
-                    elif y < y_c:
+                    elif y < self.y_c:
                         self.field[x][y] = intensity_b
         # Now rotate
         # spr.rotate(input = self.field,\
@@ -168,11 +166,11 @@ class FITSCore (object):
         #                                 reshape = False,\
         #                                 output = self.field)
         # FIXME: Rotate function results in values that are not the two intended values; maybe just use a rotation matrix here
-        self.field=skt.rotate(image=self.field, angle=split_angle,center=(x_c,y_c))
+        self.field=skt.rotate(image=self.field, angle=split_angle,center=(self.x_c,self.y_c))
         # Kill any junk outside the intended radius
         for x in range(0,self.xsize):
             for y in range(0,self.ysize):
-                if (x-x_c)**2 + (y-y_c)**2 > radius**2:
+                if (x-self.x_c)**2 + (y-self.y_c)**2 > radius**2:
                     self.field[x][y] = 0
         if outname:
             self._SaveToFITS(outname,overwrite)
@@ -202,8 +200,6 @@ class FITSCore (object):
             raise ValueError('Epsilon must be a value between 0 and 1.')
             
         # As defined on the CXC Sherpa website.
-        x_c = self.xsize/2.0-0.5
-        y_c = self.ysize/2.0-0.5
         FWHM=float(FWHM)
         peak=float(peak)
         theta=np.radians(theta)
@@ -211,8 +207,8 @@ class FITSCore (object):
         ellip = float(1-epsilon)
         for x in range(0,self.xsize):
             for y in range(0,self.ysize):
-                x_o = (x-x_c)*np.cos(theta) + (y-y_c)*np.sin(theta)
-                y_o = (y-y_c)*np.cos(theta) - (x-x_c)*np.sin(theta)
+                x_o = (x-self.x_c)*np.cos(theta) + (y-self.y_c)*np.sin(theta)
+                y_o = (y-self.y_c)*np.cos(theta) - (x-self.x_c)*np.sin(theta)
                 r = np.sqrt(((x_o**2 * ellip**2) + y_o**2)/ellip)
                 self.field[x][y]=peak*np.e**(-gauss_c*(r/FWHM)**2)
         if outname:           
@@ -254,26 +250,28 @@ class FITSCore (object):
         overwite(optional): If the output file exists, should it be overwritten?
         
         """
-        x_c = self.xsize/2.0-0.5
-        y_c = self.ysize/2.0-0.5
         for x in range(0,self.xsize):
             for y in range(0,self.ysize):
-                r = np.sqrt(((x-x_c)**2) + ((y-y_c)**2))
+                r = np.sqrt(((x-self.x_c)**2) + ((y-self.y_c)**2))
                 if (r <= r_out and r >= r_in):                    
                     self.field[x][y] = intensity
         if outname:
             self._SaveToFITS(outname,overwrite)
 
-    def DiffusionProfileTemplate(self, r_d, norm, outname, overwrite=False):
+    def DiffusionProfileTemplate(self, r_s, r_d, norm, outname, overwrite=False):
         """
-        Generate a symmetric template with a diffusion radial brightness profile
+        Generate a symmetric template with a diffusion radial brightness profile.
+        The brightness is constant until r_s, then falls off in a roughly Gaussian
+        manner with a characteristic scale length of r_d.
         """        
-        x_c = self.xsize/2.0-0.5
-        y_c = self.ysize/2.0-0.5
         for x in range(0, self.xsize):
             for y in range(0, self.ysize):
-                r = np.sqrt(((x-x_c)**2) + ((y-y_c)**2))
-                self.field[x][y] = norm/(r_d*(r+0.06*r_d))*np.exp(-(r**2)/(r_d**2))
+                r = np.sqrt(((x-self.x_c)**2) + ((y-self.y_c)**2))
+                if (r <= r_s):
+                    self.field[x][y] = norm
+                else:
+                    r = r - r_s
+                    self.field[x][y] = norm/(r_d*(r+0.06*r_d))*np.exp(-(r**2)/(r_d**2))
         if outname:
             self._SaveToFITS(outname,overwrite)
 
