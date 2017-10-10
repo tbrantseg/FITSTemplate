@@ -1,0 +1,11 @@
+name: fitstemplate-env
+
+dependencies:
+  - python=2.7
+  - numpy
+  - scipy
+  - scikit-image
+  - astropy
+  - future
+  - pip:
+    - ./

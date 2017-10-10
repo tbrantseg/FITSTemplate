@@ -266,6 +266,28 @@ class FITSCore(object):
                 r_c2 = square(r_c)
                 r_p2 = square(r_p)
                 r_2 = r_c2/r_p2
-                self.field[x][y] = norm*(r_2**0.15)*(r_p2/(r_p2+r_c2))*np.exp(-r_2)                    
+                self.field[x][y] = norm*(r_2**0.15)*(r_p2/(r_p2+r_c2))*np.exp(-r_2)
+
+    @_template
+    def WedgeTemplate(self, angle_start, angle_stop, radius, norm, **kwargs):
+        """
+        Wedge-shaped template
+        """
+        for x in range(0, self.xsize):
+            for y in range(0, self.ysize):
+                x_r = x - self.x_c
+                y_r = y - self.y_c
+                r = np.sqrt(square(x_r) + square(y_r))
+                theta = np.arctan2(y_r, x_r)
+                try:
+                    if(kwargs['radians']):
+                        radians = True
+                except KeyError:
+                    radians = False
+                if radians:
+                    theta = np.rad2deg(theta)
+                if r <= radius:
+                    if angle_start <= theta <= angle_stop:
+                        self.field[x][y] = norm
 
 # FITSTemplate.py ends here
