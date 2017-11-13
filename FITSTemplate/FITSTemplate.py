@@ -110,6 +110,10 @@ class FITSCore(object):
             print "Could not create file! {0} already exists. Try again with overwrite set to True.".format(outname)
 
     def _template(f):
+        """
+        Developer note: This function is a decorator that should be tacked on to any template function
+        added - it serves as a short way to add the FITS output functionality.
+        """
         def wrapper(*arg, **kw):
             if kw['outname']:
                 f(*arg, **kw)
@@ -259,6 +263,8 @@ class FITSCore(object):
     def HadronicDiffusionTemplate(self, r_p, norm, **kwargs):
         """
         Template with a diffusion profile according to a hadronic diffusion model.
+
+        
         """        
         for x in range(0, self.xsize):
             for y in range(0, self.ysize):
@@ -266,7 +272,10 @@ class FITSCore(object):
                 r_c2 = square(r_c)
                 r_p2 = square(r_p)
                 r_2 = r_c2/r_p2
-                self.field[x][y] = norm*(r_2**0.15)*(r_p2/(r_p2+r_c2))*np.exp(-r_2)
+                if not r:       # Dodge the singularity at r=0 in this equation.
+                    self.field[x][y] = norm
+                else:
+                    self.field[x][y] = norm*(r_2**0.15)*(r_p2/(r_p2+r_c2))*np.exp(-r_2)                
 
     @_template
     def WedgeTemplate(self, angle_start, angle_stop, radius, norm, **kwargs):
