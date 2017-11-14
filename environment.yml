@@ -3,6 +3,7 @@ name: fitstemplate-env
 dependencies:
   - python=2.7
   - numpy
+  - jupyter
   - scipy
   - scikit-image
   - astropy

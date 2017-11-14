@@ -272,7 +272,7 @@ class FITSCore(object):
                 r_c2 = square(r_c)
                 r_p2 = square(r_p)
                 r_2 = r_c2/r_p2
-                if not r:       # Dodge the singularity at r=0 in this equation.
+                if not r_2:       # Dodge the singularity at r=0 in this equation.
                     self.field[x][y] = norm
                 else:
                     self.field[x][y] = norm*(r_2**0.15)*(r_p2/(r_p2+r_c2))*np.exp(-r_2)                
